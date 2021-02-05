@@ -1,7 +1,9 @@
 package fr.epsi.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -9,24 +11,30 @@ import javax.ejb.Stateless;
 import fr.epsi.dao.FactureDao;
 import fr.epsi.dao.FactureDaoImpl;
 import fr.epsi.dto.FactureDTO;
+import fr.epsi.entity.Client;
 import fr.epsi.entity.Facture;
+import fr.epsi.entity.LigneFacture;
 import fr.epsi.entity.Produit;
 
 @Stateless
 public class FactureServiceImpl implements FactureService {
 
-// Injection de dépendance d'un objet la classe repository s'occupant de la persistence pour les objets Facture		
+// Injection de dï¿½pendance d'un objet la classe repository s'occupant de la persistence pour les objets Facture		
 	
 	@EJB
 	FactureDao dao = new FactureDaoImpl();
+	@EJB
+	ClientService clientService;
+	@EJB
+	ProduitService produitService;
 	
 	public List<Facture> getListeFacture()
 	{		
 		return dao.getListeFacture();
 	}
 	
-	/* 	Création d'une liste d'objets FactureDTO à partir d'une liste d'objets Client, 
-	 * 	afin d'éviter d'envoyer des objets Factures au Controller, et donc à la Vue
+	/* 	Crï¿½ation d'une liste d'objets FactureDTO ï¿½ partir d'une liste d'objets Client, 
+	 * 	afin d'ï¿½viter d'envoyer des objets Factures au Controller, et donc ï¿½ la Vue
 	 */
 	
 	public List<FactureDTO> getListeFactureDTO()
@@ -50,5 +58,45 @@ public class FactureServiceImpl implements FactureService {
 			return fDTO;
 		}
 		return null;
+	}
+
+	public void createFactureTest(){
+		Facture f = new Facture();
+
+
+
+		Date date = new Date();
+
+		Random r = new Random();
+		int low = 10;
+		int high = 10000;
+		int result = r.nextInt(high-low) + low;
+		f.setNumero(String.valueOf(result));
+
+
+		Client c = clientService.getListeClient().get(result % 2 == 0 ? 0 : 1);
+		f.setDate(date);
+		f.setClient(c);
+
+
+		List<Produit> produits = produitService.getListeProduit();
+		List<LigneFacture> ligneFactures = new ArrayList<LigneFacture>();
+		for (Produit produit : produits ) {
+			LigneFacture lf = new LigneFacture(produit, result % 2 == 0 ? 1 : 2);
+			lf.setFacture(f);
+			ligneFactures.add(lf);
+		}
+		f.setLigneFactures(ligneFactures);
+
+
+		System.out.println("Facture "+f.getNumero());
+		System.out.println(f.getClient().getNom());
+		for (Produit produit : f.getProduits()) {
+			System.out.println(produit.getNom() +" - "+ String.valueOf(produit.getPrix()));
+		}
+		System.out.println(f.getPrix()+"â‚¬");
+
+		dao.create(f);
+
 	}
 }

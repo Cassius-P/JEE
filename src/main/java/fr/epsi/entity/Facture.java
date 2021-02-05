@@ -1,27 +1,18 @@
 package fr.epsi.entity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
-/*	Classe représentant l'objet Client, avec des attributs d'un type compatible avec ceux de la table client de la database
- *	L'annotation @Entity précise au framework que cette classe est liée à une table de la database
+/*	Classe reprï¿½sentant l'objet Client, avec des attributs d'un type compatible avec ceux de la table client de la database
+ *	L'annotation @Entity prï¿½cise au framework que cette classe est liï¿½e ï¿½ une table de la database
  */
 
 @Entity
 public class Facture {
 
-/* 	Annotations déclarant l'attribut id comme clé primaire dans la database, 
- * 	& sa génération automatique par la base de donnée
+/* 	Annotations dï¿½clarant l'attribut id comme clï¿½ primaire dans la database, 
+ * 	& sa gï¿½nï¿½ration automatique par la base de donnï¿½e
  */	
 	
 	@Id
@@ -31,14 +22,14 @@ public class Facture {
 	private String numero;
 	private double prix;
 
-// Annotation déclarant une cardinalité 1 - n entre la table Facture & la table Produit
+// Annotation dï¿½clarant une cardinalitï¿½ 1 - n entre la table Facture & la table Produit
 	
-	@OneToMany(mappedBy = "facture" ,cascade = CascadeType.ALL)
-	private List<Produit> produits = new ArrayList<Produit>();
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "facture")
+	private Set<LigneFacture> ligneFactures;
 	
-// Annotation déclarant une cardinalité n - 1 entre la table Facture & la table Client	
+// Annotation dï¿½clarant une cardinalitï¿½ n - 1 entre la table Facture & la table Client	
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "client_id")
 	private Client client;
 	
@@ -90,5 +81,22 @@ public class Facture {
 	public void setClient(Client client) 
 	{
 		this.client = client;
+	}
+
+	public List<Produit> getProduits() {
+		List<Produit> produits = new ArrayList<Produit>();
+		for ( LigneFacture ligne : this.ligneFactures ) {
+			produits.add(ligne.getProduit());
+		}
+		return produits	 ;
+	}
+
+	public void setLigneFactures(List<LigneFacture> ligneFactures) {
+		this.ligneFactures = new HashSet<LigneFacture>(ligneFactures);
+		double prix = 0;
+		for (LigneFacture ligne : ligneFactures ) {
+			prix += ligne.getPrix();
+		}
+		this.setPrix(prix);
 	}
 }

@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="TP_PRODUIT_EJB" target="1.5" />
+      <module name="TP_PRODUIT_EJB" target="6" />
     </bytecodeTargetLevel>
   </component>
 </project>

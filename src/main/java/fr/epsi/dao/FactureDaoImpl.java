@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
+import fr.epsi.entity.Client;
 import fr.epsi.entity.Facture;
 
 /* 	Classe Repr�sentant la couche repository pour l'entit� Facture
@@ -29,7 +30,7 @@ public class FactureDaoImpl implements FactureDao {
 
 	public FactureDaoImpl() {}
 	
-// M�thode recuperant la liste des Factures d�j� pr�sentes dans la database
+// M�thode recuperant la liste des Factures déjà pr�sentes dans la database
 	
 	public List<Facture> getListeFacture()
 	{		
@@ -55,5 +56,15 @@ public class FactureDaoImpl implements FactureDao {
 		f = em.createQuery("SELECT f FROM Facture f WHERE f.numero = '"+num+"'", Facture.class)
 				.getResultList();		
 		return f;
+	}
+
+	public void create(Facture f) {
+		try {
+			utx.begin();
+			em.merge(f);
+			utx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

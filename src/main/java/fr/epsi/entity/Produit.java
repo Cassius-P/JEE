@@ -1,23 +1,22 @@
 package fr.epsi.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import fr.epsi.dto.ProduitDTO;
 
-/* 	Classe représentant l'objet Produit, avec des attributs d'un type compatible avec ceux de la table client de la DataBase
- *	L'annotation @Entity précise au framework que cette classe est liée à une table de la database
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/* 	Classe reprï¿½sentant l'objet Produit, avec des attributs d'un type compatible avec ceux de la table client de la DataBase
+ *	L'annotation @Entity prï¿½cise au framework que cette classe est liï¿½e ï¿½ une table de la database
  */
 
 @Entity
 public class Produit {
 
-/* 	Annotations déclarant l'attribut id comme clé primaire dans la database, 
- * 	& sa génération automatique par la base de donnée
+/* 	Annotations dï¿½clarant l'attribut id comme clï¿½ primaire dans la database, 
+ * 	& sa gï¿½nï¿½ration automatique par la base de donnï¿½e
  */
 	
 	@Id
@@ -27,11 +26,10 @@ public class Produit {
 	private double prix;
 	private String codeBarre;
 	
-// Annotation déclarant une cardinalité n - 1 entre la table Produit & la table Facture	
-	
-	@ManyToOne
-	@JoinColumn(name = "facture_id")
-	private Facture facture;
+// Annotation dï¿½clarant une cardinalitï¿½ n - 1 entre la table Produit & la table Facture	
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "produit")
+	private List<LigneFacture> ligneFactures;
 	
 	public Produit() {}
 	
