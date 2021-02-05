@@ -82,6 +82,7 @@ public class FactureServiceImpl implements FactureService {
 		List<Produit> produits = produitService.getListeProduit();
 		List<LigneFacture> ligneFactures = new ArrayList<LigneFacture>();
 		for (Produit produit : produits ) {
+
 			LigneFacture lf = new LigneFacture(produit, result % 2 == 0 ? 1 : 2);
 			lf.setFacture(f);
 			ligneFactures.add(lf);
